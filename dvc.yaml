@@ -1,0 +1,53 @@
+stages:
+  download:
+    cmd: python lean_ds_project_mlflow/data/download.py --config config/config_local.yml
+    deps:
+      - config/config_local.yml
+    outs:
+      - data/raw/dataset.csv
+  process:
+    cmd: python lean_ds_project_mlflow/features/process.py --config config/config_local.yml
+    deps:
+      - config/config_local.yml
+      - data/raw/dataset.csv
+    outs:
+      - data/interim/dataset.csv
+  split:
+    cmd: python lean_ds_project_mlflow/features/split.py --config config/config_local.yml
+    deps:
+      - config/config_local.yml
+      - data/interim/dataset.csv
+    outs:
+      - data/interim/dataset_tune.csv
+      - data/interim/dataset_validate.csv
+  transform:
+    cmd: python lean_ds_project_mlflow/features/transform.py --config config/config_local.yml
+    deps:
+      - config/config_local.yml
+      - data/interim/dataset_tune.csv
+      - data/interim/dataset_validate.csv
+    outs:
+      - data/processed/dataset_tune.bin
+      - data/processed/dataset_validate.bin
+  train:
+    cmd: python lean_ds_project_mlflow/models/train.py --config config/config_local.yml
+    deps:
+      - config/config_local.yml
+      - data/processed/dataset_tune.bin
+    outs:
+      - models/
+  validate:
+    cmd: python lean_ds_project_mlflow/models/validate.py --config config/config_local.yml
+    deps:
+      - config/config_local.yml
+      - data/processed/dataset_validate.bin
+      - models/
+    metrics:
+      - reports/metrics.json:
+          cache: false
+  upload:
+    cmd: python lean_ds_project_mlflow/lifecycle/upload_model.py --config config/config_local.yml
+    deps:
+      - config/config_local.yml
+      - models/
+      - reports/metrics.json

@@ -1,0 +1,104 @@
+schema: '2.0'
+stages:
+  download:
+    cmd: python lean_ds_project_mlflow/data/download.py --config config/config_local.yml
+    deps:
+    - path: config/config_local.yml
+      md5: 8d709bc9f7589c8f4f97b5ed837afcc0
+      size: 325
+    outs:
+    - path: data/raw/dataset.csv
+      md5: f7177163c833dff4b38fc8d2872f1ec6
+      size: 2
+  process:
+    cmd: python lean_ds_project_mlflow/features/process.py --config config/config_local.yml
+    deps:
+    - path: config/config_local.yml
+      md5: 8d709bc9f7589c8f4f97b5ed837afcc0
+      size: 325
+    - path: data/raw/dataset.csv
+      md5: f7177163c833dff4b38fc8d2872f1ec6
+      size: 2
+    outs:
+    - path: data/interim/dataset.csv
+      md5: f7177163c833dff4b38fc8d2872f1ec6
+      size: 2
+  transform:
+    cmd: python lean_ds_project_mlflow/features/transform.py --config config/config_local.yml
+    deps:
+    - path: config/config_local.yml
+      md5: 8d709bc9f7589c8f4f97b5ed837afcc0
+      size: 325
+    - path: data/interim/dataset_tune.csv
+      md5: f7177163c833dff4b38fc8d2872f1ec6
+      size: 2
+    - path: data/interim/dataset_validate.csv
+      md5: f7177163c833dff4b38fc8d2872f1ec6
+      size: 2
+    outs:
+    - path: data/processed/dataset_tune.bin
+      md5: 7c00f17c23bb55fd577be09415e4a82b
+      size: 30
+    - path: data/processed/dataset_validate.bin
+      md5: 7c00f17c23bb55fd577be09415e4a82b
+      size: 30
+  split:
+    cmd: python lean_ds_project_mlflow/features/split.py --config config/config_local.yml
+    deps:
+    - path: config/config_local.yml
+      md5: 8d709bc9f7589c8f4f97b5ed837afcc0
+      size: 325
+    - path: data/interim/dataset.csv
+      md5: f7177163c833dff4b38fc8d2872f1ec6
+      size: 2
+    outs:
+    - path: data/interim/dataset_tune.csv
+      md5: f7177163c833dff4b38fc8d2872f1ec6
+      size: 2
+    - path: data/interim/dataset_validate.csv
+      md5: f7177163c833dff4b38fc8d2872f1ec6
+      size: 2
+  train:
+    cmd: python lean_ds_project_mlflow/models/train.py --config config/config_local.yml
+    deps:
+    - path: config/config_local.yml
+      md5: 8d709bc9f7589c8f4f97b5ed837afcc0
+      size: 325
+    - path: data/processed/dataset_tune.bin
+      md5: 7c00f17c23bb55fd577be09415e4a82b
+      size: 30
+    outs:
+    - path: models/
+      md5: dc50694b5e608e4db57b00106a0ed4dc.dir
+      size: 1906
+      nfiles: 5
+  validate:
+    cmd: python lean_ds_project_mlflow/models/validate.py --config config/config_local.yml
+    deps:
+    - path: config/config_local.yml
+      md5: 8d709bc9f7589c8f4f97b5ed837afcc0
+      size: 325
+    - path: data/processed/dataset_validate.bin
+      md5: 7c00f17c23bb55fd577be09415e4a82b
+      size: 30
+    - path: models/
+      md5: dc50694b5e608e4db57b00106a0ed4dc.dir
+      size: 1906
+      nfiles: 5
+    outs:
+    - path: reports/metrics.json
+      md5: f3e81d5debc41fb0c94135cbf0ad69ce
+      size: 69
+  upload:
+    cmd: python lean_ds_project_mlflow/lifecycle/upload_model.py --config config/config_local.yml
+    deps:
+    - path: config/config_local.yml
+      md5: 8d709bc9f7589c8f4f97b5ed837afcc0
+      size: 325
+    - path: models/
+      md5: dc50694b5e608e4db57b00106a0ed4dc.dir
+      size: 1906
+      nfiles: 5
+    - path: reports/metrics.json
+      md5: f3e81d5debc41fb0c94135cbf0ad69ce
+      size: 69

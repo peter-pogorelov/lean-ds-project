@@ -1,0 +1,21 @@
+version: '2.1'
+services:
+  $CI_PROJECT_NAME:
+    image: $CI_PROJECT_NAME
+    restart: unless-stopped
+    ports: 
+      - "5428:5428"
+    env_file:
+      - "$OG_DISTR_PATH/$CI_PROJECT_NAME/config.env"
+    networks:
+      - backend
+    command: $STARTUP_COMMAND
+    volumes:
+      - "$OG_DISTR_PATH/$CI_PROJECT_NAME:/models"
+    logging:
+      driver: json-file
+      options:
+        max-size: 100m
+networks:
+  backend:
+    external: true

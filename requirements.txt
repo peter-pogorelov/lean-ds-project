@@ -1,0 +1,14 @@
+click==8.0.4
+loguru==0.6.0
+pyyaml==5.4.1
+joblib==1.1.0
+requests==2.27.0
+cloudpickle==2.1.0
+mlflow-skinny==1.26.1
+scikit-learn==1.0.2
+pandas==1.2.0
+scipy==1.7.3
+numpy==1.20.0
+#dvc==2.13.0
+#dvc[s3]==2.13.0
+#sqlparse==0.4.2

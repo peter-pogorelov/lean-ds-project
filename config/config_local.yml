@@ -1,0 +1,11 @@
+# название сервиса должно дублировать название проекта в GIT
+service: lean-ds-project-mlflow
+experiment: lean-ds-project-mlflow
+version: initial
+working_stage: Staging 
+dataset:
+  n_samples: 600000
+  seed: 42
+  train: 0.95
+  validate: 0.05
+mlflow_uri: <link to mlflow>

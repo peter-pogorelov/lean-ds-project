@@ -1,0 +1,9 @@
+service: $CI_PROJECT_NAME
+experiment: $CI_PROJECT_NAME
+version: $CI_COMMIT_SHORT_SHA
+working_stage: Production
+dataset:
+  n_samples: 600000
+  seed: 42
+  train: 0.95
+  validate: 0.05
